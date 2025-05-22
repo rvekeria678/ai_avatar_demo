@@ -1,37 +1,17 @@
-from typing import Annotated
-from typing_extensions import TypedDict
+from fastapi import FastAPI, HTTPException, Query
+from typing import Optional
+from chatbot_strict import strict_chatbot
+app = FastAPI()
 
-from langchain_openai import ChatOpenAI
-from langgraph.graph import StateGraph, START, END
-from langgraph.graph.message import add_messages
+@app.get("/")
+async def root():
+    return {"server status": "active"}
 
-# Define the state for the chatbot
-class State(TypedDict):
-    messages: Annotated[list, add_messages]
+@app.get("/chatbot/response")
+async def get_cb_response(input: str):
+    print(input)
+    return {"response": "hello"}
 
-# Initialize the graph
-graph_builder = StateGraph(State)
-
-# Set up the OpenAI LLM
-llm = ChatOpenAI(model_name="gpt-3.5-turbo")
-
-# Define the chatbot node
-def chatbot(state: State):
-    return {"messages": [llm.invoke(state["messages"])]}
-
-graph_builder.add_node("chatbot", chatbot)
-graph_builder.add_edge(START, "chatbot")
-graph_builder.add_edge("chatbot", END)
-
-# Compile the graph
-graph = graph_builder.compile()
-
-# Run the chatbot
-while True:
-    user_input = input(">> ")
-    if user_input.lower() in ["quit", "exit"]:
-        break
-    state = {"messages": [{"role": "user", "content": user_input}]}
-    for event in graph.stream(state):
-        for value in event.values():
-            print("Chatbot:", value["messages"][-1].content)
+@app.get("/chatbot_strict/response")
+async def get_cb_strict_response(query):
+    return {"response": strict_chatbot(query)}
