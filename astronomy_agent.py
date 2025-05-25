@@ -1,8 +1,6 @@
 from dotenv import load_dotenv
-from typing import Annotated, Literal
 from langgraph.graph import StateGraph, MessagesState, START, END
-from langgraph.graph.message import add_messages
-from langgraph.prebuilt import tools_condition, ToolNode
+from langgraph.prebuilt import ToolNode
 from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -65,7 +63,7 @@ builder.add_edge("tools", "assistant")
 graph = builder.compile()
 
 # Run
-def strict_chatbot(query: str):
+def astronomy_agent_response(query: str):
     initial_state = {"messages": HumanMessage(content=query)}
     final_state = graph.invoke(initial_state)
 

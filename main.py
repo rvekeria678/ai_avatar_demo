@@ -1,7 +1,6 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-from chatbot_strict import strict_chatbot
+from astronomy_agent import astronomy_agent_response
 
 app = FastAPI()
 app.add_middleware(
@@ -22,4 +21,4 @@ async def get_cb_response(input: str):
 
 @app.get("/chatbot_strict/response")
 async def get_cb_strict_response(query):
-    return {"response": strict_chatbot(query)}
+    return {"response": astronomy_agent_response(query)}
